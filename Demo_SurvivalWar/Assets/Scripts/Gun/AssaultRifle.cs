@@ -83,14 +83,13 @@ public class AssaultRifle : MonoBehaviour {
             PlayAudio();
             PlayEffect();
         }
-
-        if (Input.GetMouseButton(1))         //按住鼠标右键-->进入开镜状态.
+       else if (Input.GetMouseButton(1))         //按住鼠标右键-->进入开镜状态.
         {
             //进入开镜状态
             m_AssaultRifleView.EnterHoldPose();
         }
 
-        if (Input.GetMouseButtonUp(1))       //松开鼠标右键-->退出开镜状态.
+       else if (Input.GetMouseButtonUp(1))       //松开鼠标右键-->退出开镜状态.
         {
             //退出开镜状态
             m_AssaultRifleView.ExitHoldPose();
@@ -112,10 +111,10 @@ public class AssaultRifle : MonoBehaviour {
     /// </summary>
     private void PlayEffect()
     {
-        //枪口火花特效
-        GameObject.Instantiate<GameObject>(m_AssaultRifleView.M_Effect, m_AssaultRifleView.M_GunPoint.position, Quaternion.identity).GetComponent<ParticleSystem>().Play();
-        //弹出弹壳
-        Rigidbody shell = GameObject.Instantiate<GameObject>(m_AssaultRifleView.M_Shell, m_AssaultRifleView.M_EffectPos.position, Quaternion.identity).GetComponent<Rigidbody>();
+        //生成枪口火花特效
+        GameObject.Instantiate<GameObject>(m_AssaultRifleView.M_Effect, m_AssaultRifleView.M_GunPoint.position, Quaternion.identity, m_AssaultRifleView.M_EffectParent).GetComponent<ParticleSystem>().Play();
+        //生成弹出弹壳
+        Rigidbody shell = GameObject.Instantiate<GameObject>(m_AssaultRifleView.M_Shell, m_AssaultRifleView.M_EffectPos.position, Quaternion.identity, m_AssaultRifleView.M_ShellParent).GetComponent<Rigidbody>();
         shell.AddForce(m_AssaultRifleView.M_EffectPos.up * 50);
     }
 
@@ -128,14 +127,14 @@ public class AssaultRifle : MonoBehaviour {
        // Debug.DrawLine(m_AssaultRifleView.M_GunPoint.position, m_AssaultRifleView.M_GunPoint.forward * 500, Color.red);
         if(Physics.Raycast(ray,out raycastHit))
         {
-            Debug.Log("射线碰到了物体");
+            //Debug.Log("射线碰到了物体");
             //改变准星位置到射线结束点
             Vector2 cur = RectTransformUtility.WorldToScreenPoint(m_AssaultRifleView.M_EnvCamera, raycastHit.point);
             m_AssaultRifleView.M_GunStar.position = cur;
         }
         else
         {
-            Debug.Log("射线没碰到物体");
+           // Debug.Log("射线没碰到物体");
             raycastHit.point = Vector3.zero;
         }
 
@@ -150,7 +149,11 @@ public class AssaultRifle : MonoBehaviour {
         if (raycastHit.point != Vector3.zero)
         {
             //生成子弹
-            GameObject.Instantiate(m_AssaultRifleView.M_Bullet, raycastHit.point, Quaternion.identity);
+           // GameObject.Instantiate(m_AssaultRifleView.M_Bullet, raycastHit.point, Quaternion.identity);
+
+           //生成弹痕
+            if (raycastHit.collider.GetComponent<BulletMark>() != null) 
+            raycastHit.collider.GetComponent<BulletMark>().CreateBulletMark(raycastHit);
         }
     }
 

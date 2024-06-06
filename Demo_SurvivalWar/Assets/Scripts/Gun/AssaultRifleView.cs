@@ -30,6 +30,10 @@ public class AssaultRifleView : MonoBehaviour
 
     private GameObject shell;   //弹壳.
 
+    //管理特效和弹壳的临时父物体.
+    private Transform effectParent; //特效父物体.
+    private Transform shellParent;  //弹壳父物体.
+
     //组件属性.
     public Animator M_Animator { get { return m_Animator; } }
     public Camera M_EnvCamera { get { return m_EnvCamera; } }
@@ -40,6 +44,8 @@ public class AssaultRifleView : MonoBehaviour
     public GameObject M_Shell { get { return shell; } }
     public AudioClip M_Audio { get { return audio; } }
     public GameObject M_Effect { get { return effect; } }
+    public Transform M_EffectParent { get{ return effectParent; } }
+    public Transform M_ShellParent { get { return shellParent; } }
 
     private void Awake()
     {
@@ -62,6 +68,8 @@ public class AssaultRifleView : MonoBehaviour
         audio = Resources.Load<AudioClip>("Audios/Gun/AssaultRifle_Fire");
         effect = Resources.Load<GameObject>("Effects/Gun/AssaultRifle_GunPoint_Effect");
         shell = Resources.Load<GameObject>("Gun/Shell");
+        effectParent = GameObject.Find("TempObject/AssaultRifle_Effect_Parent").GetComponent<Transform>();
+        shellParent = GameObject.Find("TempObject/AssaultRifle_Shell_Parent").GetComponent<Transform>();
     }
 
     /// <summary>

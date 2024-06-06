@@ -10,3 +10,13 @@ public enum GunType
     Shotgun,
     WoodenBow
 }
+
+/// <summary>
+/// 模型材质类型枚举.
+/// </summary>
+public enum MaterialType
+{
+    Metal,
+    Stone,
+    Wood
+}
