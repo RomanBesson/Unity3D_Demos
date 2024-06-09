@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 弹痕生成(融合).受击物体上
+/// 受击物体的枪痕，特效管理脚本
 /// </summary>
+[RequireComponent(typeof(ObjectPool))]                  //挂载该脚本的同时挂载对象池脚本
 public class BulletMark : MonoBehaviour {
 
     private ObjectPool pool;                            //对象池.
@@ -12,14 +13,29 @@ public class BulletMark : MonoBehaviour {
     private Transform effectParent;                     //特效资源管理父物体.
 
     private Texture2D m_BulletMark;                     //弹痕贴图.
-    private Texture2D m_MainTexture;                    //模型主贴图.
-    private Texture2D m_MainTextureBackup;              //主贴图备份（用于还原)
+    private Texture2D m_MainTexture;                    //模型主贴图.（用于还原)
+    private Texture2D m_MainTextureBackup;              //主贴图备份（用于显示以及贴图融合)
 
     [SerializeField]                                    //序列化，使得私有化数据在面板上也可以调试
     private MaterialType materialType;                  //材质
     private GameObject prefab_Effect;                   //弹痕特效.
 
     private Queue<Vector2> bulletMarkQueue = null;      //弹痕队列.
+
+    [SerializeField] private int hp;                     //临时测试.生命值.  
+
+    public int Hp 
+    { 
+        get { return hp; }
+        set 
+        { 
+            hp = value;
+            if (hp <= 0)
+            {
+                Destroy(gameObject);
+            }
+        }
+    }
 
     void Start () {
         Init();
@@ -33,8 +49,18 @@ public class BulletMark : MonoBehaviour {
     {
         m_MainTexture = (Texture2D)gameObject.GetComponent<MeshRenderer>().material.mainTexture;
         m_MainTextureBackup = GameObject.Instantiate<Texture2D>(m_MainTexture);
+        //指定m_MainTextureBackup为显示的贴图
+        gameObject.GetComponent<MeshRenderer>().material.mainTexture = m_MainTextureBackup;
         bulletMarkQueue = new Queue<Vector2>();
-        pool = gameObject.GetComponent<ObjectPool>();
+        //对象池存在检测
+        if (gameObject.GetComponent<ObjectPool>() != null)
+        {
+            pool = gameObject.GetComponent<ObjectPool>();
+        }
+        else
+        {
+            pool = gameObject.AddComponent<ObjectPool>();
+        }
     }
 
     /// <summary>
@@ -99,10 +125,10 @@ public class BulletMark : MonoBehaviour {
                 Color color = m_BulletMark.GetPixel(i, j);
 
                 //主贴图位置融合弹痕贴图的颜色.(透明度高的像素点融合）
-                if (color.a > 0.2f) m_MainTexture.SetPixel((int)x, (int)y, color);
+                if (color.a > 0.2f) m_MainTextureBackup.SetPixel((int)x, (int)y, color);
             }
         }
-        m_MainTexture.Apply();
+        m_MainTextureBackup.Apply();
         //2秒后清除弹痕
         Invoke("RemoveBulletMark", 2);
     }
@@ -121,16 +147,16 @@ public class BulletMark : MonoBehaviour {
             {
                 for (int j = 0; j < m_BulletMark.height; j++)
                 {
-                    float x = uv.x * m_MainTexture.width - m_BulletMark.width / 2 + i;             
-                    float y = uv.y * m_MainTexture.height - m_BulletMark.height / 2 + j;
+                    float x = uv.x * m_MainTextureBackup.width - m_BulletMark.width / 2 + i;             
+                    float y = uv.y * m_MainTextureBackup.height - m_BulletMark.height / 2 + j;
 
-                    //使用备用主图片给他填充
-                    Color color = m_MainTextureBackup.GetPixel((int)x, (int)y);
-                    m_MainTexture.SetPixel((int)x, (int)y, color);
+                    //使用没有弹痕的主图片给他填充
+                    Color color = m_MainTexture.GetPixel((int)x, (int)y);
+                    m_MainTextureBackup.SetPixel((int)x, (int)y, color);
                 }
 
             }
-            m_MainTexture.Apply();
+            m_MainTextureBackup.Apply();
 
         }
     }
@@ -142,11 +168,14 @@ public class BulletMark : MonoBehaviour {
     {
         //储存当前使用的特效
         GameObject effect = null;
+        //把特效加进对象池管理
         if (pool.Data())
         {
             effect = pool.GetObject();
             //调整生成位置
             effect.transform.position = hit.point;
+            //调整生成方向
+            effect.transform.rotation = Quaternion.LookRotation(hit.normal);
         }
         else
         {
@@ -155,7 +184,7 @@ public class BulletMark : MonoBehaviour {
             effect.name = "Effect_" + materialType; 
         }
         //延迟一会加入到对象池
-        StartCoroutine(Daley(effect,2));
+        StartCoroutine(Delay(effect,1));
     }
 
     /// <summary>
@@ -164,7 +193,7 @@ public class BulletMark : MonoBehaviour {
     /// <param name="go"></param>
     /// <param name="time"></param>
     /// <returns></returns>
-    private IEnumerator Daley(GameObject go, float time)
+    private IEnumerator Delay(GameObject go, float time)
     {
         yield return new WaitForSeconds(time);
         pool.AddObject(go);

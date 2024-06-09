@@ -8,7 +8,8 @@ public enum GunType
     HuntingRifle,
     Revolver,
     Shotgun,
-    WoodenBow
+    WoodenBow,
+    WoodenSpear
 }
 
 /// <summary>
