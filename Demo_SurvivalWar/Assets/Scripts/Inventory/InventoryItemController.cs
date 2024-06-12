@@ -4,17 +4,21 @@ using UnityEngine.EventSystems;
 
 public class InventoryItemController : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    private Image m_Image; //物品图片
-    private Text m_Text; //物品数量
-    private int id = -1;//物品id和合成台对应
-    private int num = -1; //物品数量
+    private Image m_Image;                 //物品图片
+    private Text m_Text;                   //物品数量
+    private Image m_Bar;                   //物品血条.
 
-    private bool isDrag = false; //是否被拖拽
-    private bool inInventory = true;//当前物体是否在背包内.true:在背包内;false:在合成面板内.
+    private int id = -1;                   //物品id和合成台对应
+    private int num = -1;                  //物品数量
+    private int bar = 0;                   //当前物品是否需要血条[耐久值]. 0:不需要, 1:需要.
+
+    private bool isDrag = false;           //是否被拖拽
+    private bool inInventory = true;       //当前物体是否在背包内.true:在背包内;false:在合成面板内.
+
 
     private RectTransform m_RectTransform;
-    private Transform bac_Parent; //最外层物体
-    private Transform self_Parent; //保存自身原来的父物体
+    private Transform bac_Parent;          //物体拖拽过程中临时父物体.
+    private Transform self_Parent;         //保存自身原来的父物体
     private CanvasGroup m_CanvasGroup;
 
 #region 属性
@@ -73,6 +77,7 @@ public class InventoryItemController : MonoBehaviour, IBeginDragHandler, IDragHa
         bac_Parent = GameObject.Find("InventoryPanel").GetComponent<Transform>();
         m_CanvasGroup = gameObject.GetComponent<CanvasGroup>();
         gameObject.name = "InventoryItem";
+        m_Bar = m_RectTransform.Find("Bar").GetComponent<Image>();
     }
 
     /// <summary>
@@ -80,15 +85,31 @@ public class InventoryItemController : MonoBehaviour, IBeginDragHandler, IDragHa
     /// </summary>
     /// <param name="name">物品图片名称</param>
     /// <param name="num">物品个数</param>
-    public void InitItem(string name, int num ,int index)
+    public void InitItem(string name, int num, int index, int bar)
     {
         m_Image.sprite = Resources.Load<Sprite>("Item/" + name);
         m_Text.text = num.ToString();
         this.num = num;
         id = index;
+        this.bar = bar;
+        BarOrNum();
     }
 
-#region 拖拽相关
+    /// <summary>
+    /// 更新血条值.
+    /// </summary>
+    public void UpdateUI(float value)
+    {
+        //耐久血条归零，销毁自身，边框恢复成默认状态
+        if (value <= 0)
+        {
+            gameObject.GetComponent<Transform>().parent.GetComponent<ToolBarSlotController>().Normal();
+            GameObject.Destroy(gameObject);
+        }
+        m_Bar.fillAmount = value;
+    }
+
+    #region 拖拽相关
     void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
     {
         //保存原来的父物体
@@ -219,7 +240,22 @@ public class InventoryItemController : MonoBehaviour, IBeginDragHandler, IDragHa
         //改变被拖拽状态
         isDrag = false;
     }
-#endregion
+    #endregion
+
+    /// <summary>
+    /// 控制显示耐久还是显示数量
+    /// </summary>
+    private void BarOrNum()
+    {
+        if (bar == 0)
+        {
+            m_Bar.gameObject.SetActive(false);
+        }
+        else
+        {
+            m_Text.gameObject.SetActive(false);
+        }
+    }
 
     /// <summary>
     /// 调整图片尺寸

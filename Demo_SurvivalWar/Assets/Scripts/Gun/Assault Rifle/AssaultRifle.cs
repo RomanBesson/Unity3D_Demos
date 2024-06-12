@@ -4,7 +4,7 @@ using UnityEngine;
 using DG.Tweening;
 
 
-public class AssaultRifle : GunControllerBase
+public class AssaultRifle : GunWeaponBase
 {
 
     private AssaultRifleView m_AssaultRifleView;
@@ -14,7 +14,7 @@ public class AssaultRifle : GunControllerBase
     /// <summary>
     /// 播放特效.
     /// </summary>
-    public override void PlayEffect()
+    protected override void PlayEffect()
     {
         GunEffect();
         ShellEffect();
@@ -76,7 +76,7 @@ public class AssaultRifle : GunControllerBase
     /// <summary>
     /// 射击.
     /// </summary>
-    public override void Shoot()
+    protected override void Shoot()
     {
         if (Hit.point != Vector3.zero)
         {
@@ -95,19 +95,19 @@ public class AssaultRifle : GunControllerBase
         }
     }
 
- 
 
-    public override void LoadAudioAsset()
+
+    protected override void LoadAudioAsset()
     {
         Audio = Resources.Load<AudioClip>("Audios/Gun/AssaultRifle_Fire");
     }
 
-    public override void LoadEffectAsset()
+    protected override void LoadEffectAsset()
     {
         Effect = Resources.Load<GameObject>("Effects/Gun/AssaultRifle_GunPoint_Effect");
     }
 
-    public override void Init()
+    protected override void Init()
     {
         m_AssaultRifleView = (AssaultRifleView)M_GunViewBase;
         pools = gameObject.GetComponents<ObjectPool>();

@@ -11,23 +11,42 @@ public class InventoryItem
     private int itemId;
     private string itemName;
     private int itemNum;
+    private int itemBar;
 
+    /// <summary>
+    /// 物品id
+    /// </summary>
     public int ItemId
     {
         get { return itemId; }
         set { itemId = value; }
     }
 
+    /// <summary>
+    /// 该物品名称
+    /// </summary>
     public string ItemName
     {
         get { return itemName; }
         set { itemName = value; }
     }
 
+    /// <summary>
+    /// 该物品数量
+    /// </summary>
     public int ItemNum
     {
         get { return itemNum; }
         set { itemNum = value; }
+    }
+
+    /// <summary>
+    /// 物品是否有耐久
+    /// </summary>
+    public int ItemBar
+    {
+        get { return itemBar; }
+        set { itemBar = value; }
     }
 
     public InventoryItem() { }

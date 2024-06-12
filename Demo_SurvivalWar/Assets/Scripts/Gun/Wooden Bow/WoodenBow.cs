@@ -5,12 +5,12 @@ using UnityEngine;
 /// <summary>
 /// 弓箭的c层
 /// </summary>
-public class WoodenBow : GunControllerBase
+public class WoodenBow : ThrowWeaponBase
 {
     //资源加载对象(v层）
     private WoodenBowView m_WoodenBowView;
 
-    public override void Init()
+    protected override void Init()
     {
         //向下转型
         m_WoodenBowView = (WoodenBowView)M_GunViewBase;
@@ -18,25 +18,18 @@ public class WoodenBow : GunControllerBase
         CanShoot(0);
     }
 
-    public override void LoadAudioAsset()
+    protected override void LoadAudioAsset()
     {
         Audio = Resources.Load<AudioClip>("Audios/Gun/Arrow Release");
     }
 
-    public override void LoadEffectAsset()
-    {
-        //弓箭没有特效.
-    }
-
-    public override void Shoot()
+    protected override void Shoot()
     {
         //生成箭
         GameObject arrow = GameObject.Instantiate<GameObject>(m_WoodenBowView.M_Arrow, m_WoodenBowView.M_GunPoint.position, m_WoodenBowView.M_GunPoint.rotation);
         arrow.GetComponent<Arrow>().Shoot(m_WoodenBowView.M_GunPoint.forward, 1000, Damage);
+        //消耗耐久
+        Durable--;
     }
 
-    public override void PlayEffect()
-    {
-        //弓箭没有特效.
-    }
 }

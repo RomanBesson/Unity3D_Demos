@@ -14,6 +14,8 @@ public class ToolBarSlotController : MonoBehaviour
 
     private bool selfState = false;     //按钮处于的状态 是否被激活
 
+    public bool SelfState { get { return selfState; } }
+
     private void Awake()
     {
         Init();

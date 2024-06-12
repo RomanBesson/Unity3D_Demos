@@ -54,7 +54,7 @@ public class InventoryPanelController : MonoBehaviour,IUIPanelShowHide
         for (int i = 0; i < inventoryItems.Count; i++)
         {
             GameObject temp = GameObject.Instantiate(inventoryPanelView.Prefab_Item, slotList[i].transform);
-            temp.GetComponent<InventoryItemController>().InitItem(inventoryItems[i].ItemName, inventoryItems[i].ItemNum, inventoryItems[i].ItemId);
+            temp.GetComponent<InventoryItemController>().InitItem(inventoryItems[i].ItemName, inventoryItems[i].ItemNum, inventoryItems[i].ItemId, inventoryItems[i].ItemBar);
         }
     }
 
