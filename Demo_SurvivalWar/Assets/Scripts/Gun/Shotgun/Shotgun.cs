@@ -73,7 +73,7 @@ public class Shotgun : GunWeaponBase
             Vector3 offset = new Vector3(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f), 0);
             //每0.03s生成一颗子弹
             GameObject tempBullet = GameObject.Instantiate<GameObject>(m_ShotgunView.M_Bullet, m_ShotgunView.M_GunPoint.position, Quaternion.identity);
-            tempBullet.GetComponent<ShotgunBullet>().Shoot(m_ShotgunView.M_GunPoint.forward + offset, 3000, Damage/5);
+            tempBullet.GetComponent<ShotgunBullet>().Shoot(m_ShotgunView.M_GunPoint.forward + offset, 3000, Damage/5, Hit);
             yield return new WaitForSeconds(0.03f);
         }
     }

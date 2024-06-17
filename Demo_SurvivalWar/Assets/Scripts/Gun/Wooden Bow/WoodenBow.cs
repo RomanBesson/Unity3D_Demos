@@ -27,7 +27,7 @@ public class WoodenBow : ThrowWeaponBase
     {
         //生成箭
         GameObject arrow = GameObject.Instantiate<GameObject>(m_WoodenBowView.M_Arrow, m_WoodenBowView.M_GunPoint.position, m_WoodenBowView.M_GunPoint.rotation);
-        arrow.GetComponent<Arrow>().Shoot(m_WoodenBowView.M_GunPoint.forward, 1000, Damage);
+        arrow.GetComponent<Arrow>().Shoot(m_WoodenBowView.M_GunPoint.forward, 1000, Damage, Hit);
         //消耗耐久
         Durable--;
     }

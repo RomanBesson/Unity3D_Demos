@@ -4,6 +4,16 @@ using UnityStandardAssets.CrossPlatformInput;
 using UnityStandardAssets.Utility;
 using Random = UnityEngine.Random;
 
+/// <summary>
+/// 玩家状态
+/// </summary>
+public enum PlayerState
+{
+    IDLE,
+    WALK,
+    RUN
+}
+
 namespace UnityStandardAssets.Characters.FirstPerson
 {
     [RequireComponent(typeof (CharacterController))]
@@ -27,6 +37,33 @@ namespace UnityStandardAssets.Characters.FirstPerson
         [SerializeField] private AudioClip[] m_FootstepSounds;    // an array of footstep sounds that will be randomly selected from.
         [SerializeField] private AudioClip m_JumpSound;           // the sound played when character leaves the ground.
         [SerializeField] private AudioClip m_LandSound;           // the sound played when character touches back on ground.
+
+        /// <summary>
+        /// 玩家行走速度
+        /// </summary>
+        public float M_WalkSpeed
+        {
+            get { return m_WalkSpeed; }
+            set { m_WalkSpeed = value; }
+        }
+
+        /// <summary>
+        /// 玩家奔跑速度
+        /// </summary>
+        public float M_RunSpeed
+        {
+            get { return m_RunSpeed; }
+            set { m_RunSpeed = value; }
+        }
+
+
+        //玩家角色状态标志位.
+        private PlayerState m_PlayerState = PlayerState.IDLE;
+        public PlayerState M_PlayerState
+        {
+            get { return m_PlayerState; }
+            set { m_PlayerState = value; }
+        }
 
         private Camera m_Camera;
         private bool m_Jump;
@@ -231,6 +268,21 @@ namespace UnityStandardAssets.Characters.FirstPerson
                 StopAllCoroutines();
                 StartCoroutine(!m_IsWalking ? m_FovKick.FOVKickUp() : m_FovKick.FOVKickDown());
             }
+
+            //改变玩家角色的状态.
+            if (m_IsWalking == true && (horizontal != 0 || vertical != 0))
+            {
+                m_PlayerState = PlayerState.WALK;
+            }
+            if (m_IsWalking == false && (horizontal != 0 || vertical != 0))
+            {
+                m_PlayerState = PlayerState.RUN;
+            }
+            if (horizontal == 0 && vertical == 0)
+            {
+                m_PlayerState = PlayerState.IDLE;
+            }
+
         }
 
 

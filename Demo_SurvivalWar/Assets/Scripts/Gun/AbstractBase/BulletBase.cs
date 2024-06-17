@@ -75,7 +75,7 @@ public abstract class BulletBase : MonoBehaviour {
     /// <param name="dir"></param>
     /// <param name="force"></param>
     /// <param name="damage"></param>
-    public abstract void Shoot(Vector3 dir, int force, int damage);
+    public abstract void Shoot(Vector3 dir, int force, int damageM, RaycastHit hit);
     /// <summary>
     /// 发生碰撞后
     /// </summary>

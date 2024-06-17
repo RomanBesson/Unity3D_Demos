@@ -25,7 +25,7 @@ public class WoodenSpear : ThrowWeaponBase {
     {
         //生成长矛
         GameObject spear = GameObject.Instantiate<GameObject>(m_WoodenSpearView.M_Spear, m_WoodenSpearView.M_GunPoint.position, m_WoodenSpearView.M_GunPoint.rotation);
-        spear.GetComponent<Arrow>().Shoot(m_WoodenSpearView.M_GunPoint.forward, 2000, Damage);
+        spear.GetComponent<Arrow>().Shoot(m_WoodenSpearView.M_GunPoint.forward, 2000, Damage, Hit);
         //消耗耐久
         Durable--;
     }

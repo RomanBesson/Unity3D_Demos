@@ -47,7 +47,17 @@ public class BulletMark : MonoBehaviour {
     /// </summary>
     private void Init()
     {
-        m_MainTexture = (Texture2D)gameObject.GetComponent<MeshRenderer>().material.mainTexture;
+        //如果是树木（树有多个材质球，取树干为主贴图）
+        if(gameObject.name == "Conifer")
+        {
+            m_MainTexture = (Texture2D)gameObject.GetComponent<MeshRenderer>().materials[2].mainTexture;
+        }
+        //其他只有一个贴图的
+        else
+        {
+            m_MainTexture = (Texture2D)gameObject.GetComponent<MeshRenderer>().material.mainTexture;
+        }
+
         m_MainTextureBackup = GameObject.Instantiate<Texture2D>(m_MainTexture);
         //指定m_MainTextureBackup为显示的贴图
         gameObject.GetComponent<MeshRenderer>().material.mainTexture = m_MainTextureBackup;
@@ -103,12 +113,18 @@ public class BulletMark : MonoBehaviour {
     /// </summary>
     public void CreateBulletMark(RaycastHit hit)
     {
+        //播放击中音效
+        PlayAudios(hit);
+       
         //textureCoord:贴图UV坐标点.（获取击打位置在主贴图上的位置）
         Vector2 uv = hit.textureCoord;
+       
         //生成击碎特效
         PlayEffect(hit);
+        
         //添加到弹痕队列
         bulletMarkQueue.Enqueue(uv);
+        
         //宽度,横向,X轴.
         for (int i = 0; i < m_BulletMark.width; i++)
         {
@@ -185,6 +201,25 @@ public class BulletMark : MonoBehaviour {
         }
         //延迟一会加入到对象池
         StartCoroutine(Delay(effect,1));
+    }
+
+    /// <summary>
+    /// 播放三类击中音效.
+    /// </summary>
+    private void PlayAudios(RaycastHit hit)
+    {
+        switch (materialType)
+        {
+            case MaterialType.Metal:
+                AudioManager.Instance.PlayAudioClipByName(ClipName.BulletImpactMetal, hit.point);
+                break;
+            case MaterialType.Stone:
+                AudioManager.Instance.PlayAudioClipByName(ClipName.BulletImpactStone, hit.point);
+                break;
+            case MaterialType.Wood:
+                AudioManager.Instance.PlayAudioClipByName(ClipName.BulletImpactWood, hit.point);
+                break;
+        }
     }
 
     /// <summary>

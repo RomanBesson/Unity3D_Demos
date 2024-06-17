@@ -86,11 +86,31 @@ public class AssaultRifle : GunWeaponBase
             //消耗耐久
             Durable--;
 
-           //生成弹痕
-            if (Hit.collider.GetComponent<BulletMark>() != null) 
+            //射中的是环境物体，生成弹痕
+            if (Hit.collider.GetComponent<BulletMark>() != null)
             {
                 Hit.collider.GetComponent<BulletMark>().CreateBulletMark(Hit);
                 Hit.collider.GetComponent<BulletMark>().Hp -= Damage;
+            }
+            //射中的是AI层的物体
+            else if (Hit.collider.GetComponentInParent<AI>() != null)
+            {
+                //击中了头部
+                if (Hit.collider.gameObject.name == "Head")
+                {
+                    Hit.collider.GetComponentInParent<AI>().HeadHit(Damage * 2);
+                }
+                //击中其他位置
+                else
+                {
+                    Hit.collider.GetComponentInParent<AI>().NormalHit(Damage);
+                }
+                Hit.collider.GetComponentInParent<AI>().PlayerEffect(Hit);
+            }
+            //射中别的
+            else
+            {
+                GameObject.Instantiate(m_AssaultRifleView.M_Bullet, Hit.point, Quaternion.identity);
             }
         }
     }

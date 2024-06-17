@@ -31,6 +31,8 @@ public class TreeManager : MonoBehaviour {
             //随机高度
             float height = Random.Range(0.5f, 1.0f);
             tree.localScale = tree.localScale * height;
+            //给树改名字
+            tree.name = "Conifer";
         }
 
 	}
