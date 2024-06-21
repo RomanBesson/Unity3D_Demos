@@ -10,7 +10,7 @@ public class Item : MonoBehaviour {
 
     private Image icon_Image;                                           //该环形项的图片
     private Image item_BG;                                              //背景图片（用于显示是否选中）
-    private List<GameObject> materialList = new List<GameObject>();     //该项下的子项材料对象
+    public List<GameObject> materialList = new List<GameObject>();     //该项下的子项材料对象
 
     void Awake () {
         icon_Image = transform.Find("Icon").GetComponent<Image>();

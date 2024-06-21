@@ -342,7 +342,6 @@ public class AI : MonoBehaviour {
     {
         HitHard();
         Hp -= value;
-        Debug.Log("头部受伤害.");
         PlayHitAudio();
     }
 
@@ -353,7 +352,6 @@ public class AI : MonoBehaviour {
     {
         HitNormal();
         Hp -= value;
-        Debug.Log("身体受伤害.");
         PlayHitAudio();
     }
 

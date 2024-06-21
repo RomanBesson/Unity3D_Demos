@@ -13,6 +13,7 @@ public class GunFactory : MonoBehaviour {
     private GameObject prefab_Shotgun;          //霰弹枪
     private GameObject prefab_WoodenBow;        //弓箭
     private GameObject prefab_WoodenSpear;      //长矛
+    private GameObject prefab_Build;            //建造图纸
     private int index = 0;                      //序号
 
     void Awake()
@@ -33,6 +34,7 @@ public class GunFactory : MonoBehaviour {
         prefab_Shotgun = Resources.Load<GameObject>("Gun/Prefabs/Shotgun");
         prefab_WoodenBow = Resources.Load<GameObject>("Gun/Prefabs/Wooden Bow");
         prefab_WoodenSpear = Resources.Load<GameObject>("Gun/Prefabs/Wooden Spear");
+        prefab_Build = Resources.Load<GameObject>("Gun/Prefabs/Building Plan");
     }
 
     /// <summary>
@@ -61,6 +63,9 @@ public class GunFactory : MonoBehaviour {
             case "Wooden Spear":
                 tempGun = GameObject.Instantiate<GameObject>(prefab_WoodenSpear, transform);
                 InitGun(tempGun, 200, 5, GunType.WoodenSpear, icon);
+                break;
+            case "Building":
+                tempGun = GameObject.Instantiate<GameObject>(prefab_Build, transform);
                 break;
         }
         return tempGun;

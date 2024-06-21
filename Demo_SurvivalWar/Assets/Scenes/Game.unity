@@ -1816,6 +1816,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 889fa9d2ecc5e0a478b5a871b816129d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &391345813
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 391345814}
+  m_Layer: 0
+  m_Name: BuildModels
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &391345814
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 391345813}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 960, y: 623.80005, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &399251515
 GameObject:
   m_ObjectHideFlags: 0
@@ -3255,18 +3286,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Terrain
       objectReference: {fileID: 0}
-    - target: {fileID: 1686734570876686, guid: e52a50ea226959d43ac14e0f2485f671, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1754616582056976, guid: e52a50ea226959d43ac14e0f2485f671, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4218657955366210, guid: e52a50ea226959d43ac14e0f2485f671, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 9
-      objectReference: {fileID: 0}
     - target: {fileID: 4369161465246068, guid: e52a50ea226959d43ac14e0f2485f671, type: 3}
       propertyPath: m_RootOrder
       value: 6
@@ -3310,10 +3329,6 @@ PrefabInstance:
     - target: {fileID: 4369161465246068, guid: e52a50ea226959d43ac14e0f2485f671, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4740777185633984, guid: e52a50ea226959d43ac14e0f2485f671, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 7.7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e52a50ea226959d43ac14e0f2485f671, type: 3}
@@ -5578,6 +5593,7 @@ GameObject:
   - component: {fileID: 1557359676}
   - component: {fileID: 1557359675}
   - component: {fileID: 1557359678}
+  - component: {fileID: 1557359679}
   m_Layer: 5
   m_Name: BuildPanel
   m_TagString: Untagged
@@ -5668,6 +5684,18 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
+--- !u!114 &1557359679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1557359673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5550de74cae628b41800baeb04c59f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1559780297
 GameObject:
   m_ObjectHideFlags: 0
@@ -5949,7 +5977,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 6199
+    m_Bits: 30775
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0

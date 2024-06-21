@@ -8,42 +8,32 @@ using UnityEngine.UI;
 /// </summary>
 public class BuildPanelController : MonoBehaviour {
 
-    /// <summary>
-    /// 环形图片 
-    /// </summary>
-    private Transform BG_Transform;                            
-    /// <summary>
-    /// 环形每项的预制体
-    /// </summary>
-    private GameObject item_Prefab;
-    /// <summary>
-    /// 材料子项预制体
-    /// </summary>
-    private GameObject material_Prefab;
-    /// <summary>
-    /// 中心显示物品名称
-    /// </summary>
-    private Text itemName_Text;                                
+    #region 字段和属性
+    private BuildPanelView m_BuildPanelView;        //V层引用.
 
     /// <summary>
-    /// 环形每项对应的图片集合
+    /// 临时建造材料模型.
     /// </summary>
-    private List<Sprite> icons = new List<Sprite>();
+    private GameObject tempBuildModel = null;
+    /// <summary>
+    /// 实例化生成后的模型.
+    /// </summary>
+    private GameObject BuildModel = null;                                     
+
     /// <summary>
     /// 环形每项的脚本集合
     /// </summary>
     private List<Item> itemList = new List<Item>();
 
+    //主菜单相关字段
     /// <summary>
-    /// 用于记录滚轮的数组.[需要累加记录].
+    /// 累加记录当前滚轮的滚动值
     /// </summary>
     private float scrollNum = 90000.0f;
-
     /// <summary>
     /// 当前环形项索引（需要取余）
     /// </summary>
     private int index = 0;
-
     /// <summary>
     /// 当前激活环形项
     /// </summary>
@@ -53,110 +43,185 @@ public class BuildPanelController : MonoBehaviour {
     /// </summary>
     private Item targetItem = null;
 
+
+    //二级菜单滚动相关字段.--Material.
     /// <summary>
-    /// 环形UI面板是否显示标志位.
+    /// 二级菜单累加记录当前滚轮的滚动值
     /// </summary>
-    private bool isUIShow = true;                              
+    private float scrollNum_Material = 0.0f;
+    /// <summary>
+    /// 二级菜单索引
+    /// </summary>
+    private int index_Material = 0;
+    /// <summary>
+    /// 二级菜单当前激活项
+    /// </summary>
+    private MaterialItem currentMaterial = null;
+    /// <summary>
+    /// 二级菜单即将激活项
+    /// </summary>
+    private MaterialItem targetMaterial = null;
+
+
+    /// <summary>
+    /// 环形UI面板是否显示标志位.  true:显示环形UI, false:隐藏环形UI
+    /// </summary>
+    private bool isUIShow = true;
+    /// <summary>
+    /// 标识当前滚轮操作的是主菜单,还是二级菜单 [true: 主菜单 | false: 二级菜单]
+    /// </summary>
+    private bool isItemCtr = true;        
 
     private string[] itemNames = new string[] { "", "杂项", "屋顶", "楼梯", "窗户", "门", "墙壁", "地板", "地基" };
 
     /// <summary>
-    /// 材料图片数组 
+    /// 射线检测的层数.
     /// </summary>
-    private List<Sprite[]> materialIcons = new List<Sprite[]>();
+    private int layerNum = 0;              
+
+    //切换到建筑图纸时同时显示UI
+    void OnEnable()
+    {
+        isUIShow = true;
+        if (m_BuildPanelView != null)
+        {
+            m_BuildPanelView.M_BG_Transform.gameObject.SetActive(true);
+        }
+    }
 
     /// <summary>
     /// 材料UI初始旋转角度.
     /// </summary>
-    private int zIndex = 20;                
+    private int zIndex = 20;
+        
 
-    /// <summary>
-    /// 环形UI项材料子项名称数组的集合
-    /// </summary>
-    private List<string[]> materialIconNames = new List<string[]>();
+    private Ray ray;
+    private RaycastHit hit;
+
+    #endregion
 
     void Start () {
-        Init();
-        LoadIcons();
-        LoadMaterialIcons();
-        SetMaterialIconNames();
+        m_BuildPanelView = gameObject.GetComponent<BuildPanelView>();
         CreateItems();
     }
 
 
     void Update()
     {
-        //Tab键控制环形UI显示和隐藏
-        if (Input.GetKeyDown(KeyCode.Tab))
-        {
-            ShowOrHide();
-        }
+        MouseRight();
+        MouseScroll();
+        MouseLeft();
+        //如果要实例化的模型不为空
+        if (BuildModel != null) SetModelPosition();
 
-        //鼠标滚轮逻辑.
-        if (isUIShow)
+    }
+
+    /// <summary>
+    /// TAB键逻辑.
+    /// </summary>
+    private void MouseRight()
+    {
+        //Tab键控制环形UI显示和隐藏
+        if (Input.GetMouseButtonDown(1))
+        {
+            //如果此时是子菜单
+            if (isItemCtr == false)
+            {
+                //将当前子菜单项取消高亮
+                currentMaterial.Normal();
+
+                //设置标志位为主菜单
+                isItemCtr = true;
+            }
+            //此时是主菜单，进行隐藏或者显示
+            else
+            {
+                ShowOrHide();
+            }
+        }
+    }
+
+    /// <summary>
+    /// 鼠标滚轮逻辑.
+    /// </summary>
+    private void MouseScroll()
+    {
+        //鼠标滚轮选择环形主菜单项逻辑.
+        if (isUIShow && isItemCtr == true)
         {
             MouseScrollWheel();
         }
 
+        //鼠标滚轮选择环形子菜单项逻辑.--Material.
+        if (isUIShow && isItemCtr == false)
+        {
+            if (Input.GetAxis("Mouse ScrollWheel") != 0)
+            {
+                MouseScrollWheelMaterial();
+            }
+        }
     }
 
     /// <summary>
-    /// 基础初始化操作.
+    /// 鼠标左键逻辑.
     /// </summary>
-    private void Init()
+    private void MouseLeft()
     {
-        BG_Transform = transform.Find("WheelBG");
-        item_Prefab = Resources.Load<GameObject>("Build/Prefab/Item");
-        itemName_Text = transform.Find("WheelBG/ItemName").GetComponent<Text>();
-        material_Prefab = Resources.Load<GameObject>("Build/Prefab/MaterialBG");
-    }
 
-    /// <summary>
-    /// 加载九个Icon图标.
-    /// </summary>
-    private void LoadIcons()
-    {
-        icons.Add(null);
-        icons.Add(Resources.Load<Sprite>("Build/Icon/Question Mark"));
-        icons.Add(Resources.Load<Sprite>("Build/Icon/Roof_Category"));
-        icons.Add(Resources.Load<Sprite>("Build/Icon/Stairs_Category"));
-        icons.Add(Resources.Load<Sprite>("Build/Icon/Window_Category"));
-        icons.Add(Resources.Load<Sprite>("Build/Icon/Door_Category"));
-        icons.Add(Resources.Load<Sprite>("Build/Icon/Wall_Category"));
-        icons.Add(Resources.Load<Sprite>("Build/Icon/Floor_Category"));
-        icons.Add(Resources.Load<Sprite>("Build/Icon/Foundation_Category"));
-    }
+        //鼠标左键逻辑.
+        if (Input.GetMouseButtonDown(0))
+        {
+            //如果主菜单组件为空，返回
+            if (targetItem == null) return;
 
-    /// <summary>
-    /// 加载具体建造材料的图标Icons.
-    /// </summary>
-    private void LoadMaterialIcons()
-    {
-        materialIcons.Add(null);
-        materialIcons.Add(new Sprite[] { LoadIcon("Ceiling Light"), LoadIcon("Pillar_Wood"), LoadIcon("Wooden Ladder") });
-        materialIcons.Add(new Sprite[] { null, LoadIcon("Roof_Metal"), null });
-        materialIcons.Add(new Sprite[] { LoadIcon("Stairs_Wood"), LoadIcon("L Shaped Stairs_Wood"), null });
-        materialIcons.Add(new Sprite[] { null, LoadIcon("Window_Wood"), null });
-        materialIcons.Add(new Sprite[] { null, LoadIcon("Wooden Door"), null });
-        materialIcons.Add(new Sprite[] { LoadIcon("Wall_Wood"), LoadIcon("Doorway_Wood"), LoadIcon("Window Frame_Wood") });
-        materialIcons.Add(new Sprite[] { null, LoadIcon("Floor_Wood"), null });
-        materialIcons.Add(new Sprite[] { null, LoadIcon("Platform_Wood"), null });
-    }
+            //如果主菜单项对应的二级菜单为空
+            if (targetItem.materialList.Count == 0)
+            {
+                SetLeftKeyNull();
+                SetUIHide();
+                return;
+            }
 
-    /// <summary>
-    /// 设置材料Icons的名称.
-    /// </summary>
-    private void SetMaterialIconNames()
-    {
-        materialIconNames.Add(null);
-        materialIconNames.Add(new string[] { "吊灯", "木柱", "梯子" });
-        materialIconNames.Add(new string[] { null, "屋顶", null });
-        materialIconNames.Add(new string[] { "直梯", "L型梯", null });
-        materialIconNames.Add(new string[] { null, "窗户", null });
-        materialIconNames.Add(new string[] { null, "门", null });
-        materialIconNames.Add(new string[] { "普通墙壁", "门型墙壁", "窗型墙壁" });
-        materialIconNames.Add(new string[] { null, "地板", null });
-        materialIconNames.Add(new string[] { null, "地基", null });
+            //如果此时没有选中建造模型，返回主菜单
+            if (tempBuildModel == null) isItemCtr = false;
+
+            //如果已经选中建造模型，以及主菜单处于显示状态
+            if (tempBuildModel != null && isUIShow)
+            {
+                //主菜单隐藏，显示标志位设置为隐藏
+                SetUIHide();
+
+                //将当前子菜单项取消高亮
+                currentMaterial.Normal();
+            }
+
+            //如果已经选中模型，但是当前位置不能摆放，停止执行
+            if (BuildModel != null && BuildModel.GetComponent<MaterialModelBase>().IsCunPut == false) return;
+
+            //如果已经存在可遥控的建造模型且可以摆放在当前位置
+            if (BuildModel != null && BuildModel.GetComponent<MaterialModelBase>().IsCunPut)
+            {
+                //将摆放完的建筑材料放在 BuildModelEnd (14)层上，让射线可以检测到
+                BuildModel.layer = 14;
+
+                //变回原来的颜色
+                BuildModel.GetComponent<MaterialModelBase>().Normal();
+
+                //把建筑相关的脚本销毁（该模型不再处于建筑模式）
+                GameObject.Destroy(BuildModel.GetComponent<MaterialModelBase>());
+            }
+
+
+            //如果已经选中建造模型
+            if (tempBuildModel != null)
+            {
+                //在前方实例化生成对应模型（将之前的BuildModel放置在射线位置）
+                BuildModel = GameObject.Instantiate<GameObject>(tempBuildModel, m_BuildPanelView.M_Player_Transform.position + new Vector3(0, 0, 10), Quaternion.identity, m_BuildPanelView.M_Models_Parent);
+
+                //滚轮操作还原为主菜单
+                isItemCtr = true;
+            }
+        }
     }
 
     /// <summary>
@@ -166,31 +231,33 @@ public class BuildPanelController : MonoBehaviour {
     {
         for (int i = 0; i < 9; i++)
         {
-            GameObject item = GameObject.Instantiate<GameObject>(item_Prefab, BG_Transform);
+            GameObject item = GameObject.Instantiate<GameObject>(m_BuildPanelView.M_Item_Prefab, m_BuildPanelView.M_BG_Transform);
             itemList.Add(item.GetComponent<Item>());
 
-            if (icons[i] == null)
+            if (m_BuildPanelView.Icons[i] == null)
             {
                 item.GetComponent<Item>().Init("Item", Quaternion.Euler(new Vector3(0, 0, i * 40)), false, null, true);
             }
             else
             {
-                item.GetComponent<Item>().Init("Item", Quaternion.Euler(new Vector3(0, 0, i * 40)), true, icons[i], false);
+                item.GetComponent<Item>().Init("Item", Quaternion.Euler(new Vector3(0, 0, i * 40)), true, m_BuildPanelView.Icons[i], false);
                 //完成具体分类当中具体材料的生成.
-                for (int j = 0; j < materialIcons[i].Length; j++)
+                for (int j = 0; j < m_BuildPanelView.MaterialIcons[i].Length; j++)
                 {
                     //每添加一个旋转13度
                     zIndex += 13;
 
-                    if (materialIcons[i][j] != null)
+                    //如果对应材料图片不为空
+                    if (m_BuildPanelView.MaterialIcons[i][j] != null)
                     {
-                        GameObject material = GameObject.Instantiate<GameObject>(material_Prefab, BG_Transform);
+
+                        GameObject material = GameObject.Instantiate<GameObject>(m_BuildPanelView.M_Material_Prefab, m_BuildPanelView.M_BG_Transform);
                         
                         //子项扇形旋转
                         material.GetComponent<Transform>().rotation = Quaternion.Euler(new Vector3(0, 0, zIndex));
 
                         //设置对应图片
-                        material.GetComponent<Transform>().Find("Icon").GetComponent<Image>().sprite = materialIcons[i][j];
+                        material.GetComponent<Transform>().Find("Icon").GetComponent<Image>().sprite = m_BuildPanelView.MaterialIcons[i][j];
 
                         //内部图片不旋转
                         material.GetComponent<Transform>().Find("Icon").GetComponent<Transform>().rotation = Quaternion.Euler(Vector3.zero);
@@ -220,20 +287,24 @@ public class BuildPanelController : MonoBehaviour {
         if (isUIShow)
         {
             //关闭面板，重置标志位
-            BG_Transform.gameObject.SetActive(false);
+            m_BuildPanelView.M_BG_Transform.gameObject.SetActive(false);
             isUIShow = false;
         }
         //如果当前没有显示
         else
         {
             //显示环形UI，开启标志位
-            BG_Transform.gameObject.SetActive(true);
+            m_BuildPanelView.M_BG_Transform.gameObject.SetActive(true);
             isUIShow = true;
+
+            //重置
+            if (targetMaterial != null) targetMaterial.Normal();
+            Reset();
         }
     }
 
     /// <summary>
-    /// 鼠标滚轮操作.
+    /// 环形UI鼠标滚轮操作.
     /// </summary>
     private void MouseScrollWheel()
     {
@@ -259,20 +330,146 @@ public class BuildPanelController : MonoBehaviour {
     }
 
     /// <summary>
-    /// 设置Text组件内容.
+    /// 二级菜单鼠标滚轮操作.--Material.
+    /// </summary>
+    private void MouseScrollWheelMaterial()
+    {
+        //获取鼠标滚轮数值累加取余得到当前二级菜单索引
+        scrollNum_Material += Input.GetAxis("Mouse ScrollWheel") * 5;
+        index_Material = Mathf.Abs((int)scrollNum_Material);
+
+        //获取二级菜单目标项
+        targetItem = itemList[index % itemList.Count];
+        targetMaterial = targetItem.materialList[index_Material % targetItem.materialList.Count].GetComponent<MaterialItem>();
+
+        //切换显示状态
+        if (targetMaterial != currentMaterial)
+        {
+            //将当前选中模型储存为临时模型
+            tempBuildModel = m_BuildPanelView.MaterialModels[index % itemList.Count][index_Material % targetItem.materialList.Count];
+            
+            targetMaterial.Height();
+            if (currentMaterial != null)
+            {
+                currentMaterial.Normal();
+            }
+            currentMaterial = targetMaterial;
+
+            SetTextValueMaterial();
+        }
+    }
+
+    /// <summary>
+    /// 使用射线来确定模型的位置.
+    /// </summary>
+    private void SetModelPosition()
+    {
+        //如果是吊灯或者屋顶，忽略已经创建的建筑物体，让他们可以高处摆放
+        if (BuildModel.name == "Roof(Clone)" || BuildModel.name == "Ceiling_Light(Clone)")
+        {
+            layerNum = ~(1 << 13);
+        }
+
+        //否则，不忽略
+        else
+        {
+            layerNum = 1 << 0;
+        }
+
+        ray = m_BuildPanelView.M_EnvCamera.ScreenPointToRay(Input.mousePosition);
+
+        //忽略建筑模型层
+        if (Physics.Raycast(ray, out hit, 15, layerNum))
+        {
+
+                //如果不可吸附
+                if (BuildModel.GetComponent<MaterialModelBase>().IsAttach == false)
+                {
+                    //模型跟随鼠标射线移动
+                    BuildModel.GetComponent<Transform>().position = hit.point;
+                }
+
+                //距离太远，设置为不可吸附
+                if (Vector3.Distance(hit.point, BuildModel.GetComponent<Transform>().position) > 3)
+                {
+                    BuildModel.GetComponent<MaterialModelBase>().IsAttach = false;
+                }
+        }
+    }
+
+    /// <summary>
+    /// 鼠标左键清空临时模型和实例化模型
+    /// </summary>
+    private void SetLeftKeyNull()
+    {
+        //清空临时模型
+        if (tempBuildModel != null) tempBuildModel = null;
+
+        //清空实例化模型
+        if (BuildModel != null)
+        {
+            GameObject.Destroy(BuildModel);
+            BuildModel = null;
+        }
+    }
+
+    /// <summary>
+    /// 重置环形UI.
+    /// </summary>
+    public void Reset()
+    {
+        DestroyBuildModel();
+        if (tempBuildModel != null) tempBuildModel = null;
+
+        //重置子环形
+        if (currentItem != null)
+        {
+            currentItem.Hide();
+            currentItem = itemList[0];
+            currentItem.Show();
+        }
+
+        index = 0;
+        scrollNum = -90000.0f;
+
+        scrollNum_Material = 0.0f;
+        index_Material = 0;
+        currentMaterial = null;
+    }
+
+    /// <summary>
+    /// 单独设置UI面板隐藏.
+    /// </summary>
+    private void SetUIHide()
+    {
+        m_BuildPanelView.M_BG_Transform.gameObject.SetActive(false);
+        isUIShow = false;
+    }
+
+    /// <summary>
+    /// 设置Text组件内容-环形主菜单
     /// </summary>
     private void SetTextValue()
     {
-        itemName_Text.text = itemNames[index % itemNames.Length];
+        m_BuildPanelView.M_ItemName_Text.text = itemNames[index % itemNames.Length];
     }
 
 
     /// <summary>
-    /// 加载指定的材料icon图标.
+    /// 设置Text组件内容.--环形子菜单.
     /// </summary>
-    private Sprite LoadIcon(string name)
+    private void SetTextValueMaterial()
     {
-        return Resources.Load<Sprite>("Build/MaterialIcon/" + name);
+        m_BuildPanelView.M_ItemName_Text.text = m_BuildPanelView.MaterialIconNames[index % itemList.Count][index_Material % targetItem.materialList.Count];
     }
 
+   
+
+    /// <summary>
+    /// 销毁未固定位置的模型.
+    /// </summary>
+    public void DestroyBuildModel()
+    {
+        GameObject.Destroy(BuildModel);
+    }
 }

@@ -7,6 +7,11 @@ TagManager:
   - InventorySlot
   - InventoryItem
   - CraftingSlot
+  - Terrain
+  - Platform
+  - PlatformToWall
+  - PlatformToPillar
+  - Build
   layers:
   - Default
   - TransparentFX
@@ -21,8 +26,8 @@ TagManager:
   - 
   - Env
   - AI
-  - 
-  - 
+  - BuildModel
+  - BuildModelEnd
   - 
   - 
   - 

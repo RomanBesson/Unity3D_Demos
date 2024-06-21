@@ -5,6 +5,7 @@ using UnityEngine;
 public class GameConst {
 
     public const KeyCode InventoryPanelKey = KeyCode.I;     //背包面板按键.
+    public const KeyCode BuildPanelKey = KeyCode.B;         //建造模块面板按键.
 
     //工具栏模块按键1~8.
     public const KeyCode ToolBarPanelKey_1 = KeyCode.Alpha1;    

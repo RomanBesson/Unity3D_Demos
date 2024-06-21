@@ -103,10 +103,14 @@ public class ToolBarPanelController : MonoBehaviour {
         //如果当前工具栏有物品
         if (currentActiveModel != null)
         {
-            //执行放下武器动作
-            currentActiveModel.GetComponent<GunControllerBase>().Holster();
-            yield return new WaitForSeconds(1);
-            //隐藏
+            //如果不是建筑图纸
+            if (currentActiveModel.tag != "Build")
+            {
+                //执行放下武器动作
+                currentActiveModel.GetComponent<GunControllerBase>().Holster();
+                yield return new WaitForSeconds(1);
+            }
+           
             currentActiveModel.SetActive(false);
         }
         //当前工具栏下有物品
@@ -115,9 +119,11 @@ public class ToolBarPanelController : MonoBehaviour {
             //查看字典里是否存在了对应物品
             GameObject temp = null;
             toolBarDic.TryGetValue(currentActive, out temp);
+
             //字典里没有现在的物品
             if (temp == null)
             {
+
                 //生成物品，添加进去
                 temp = GunFactory.Instance.CreateGun(m_temp.GetComponent<Image>().sprite.name, m_temp.gameObject);
                 toolBarDic.Add(currentActive, temp);

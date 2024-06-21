@@ -920,9 +920,10 @@ GameObject:
   m_Component:
   - component: {fileID: 4432324410099430}
   - component: {fileID: 95436068842167594}
+  - component: {fileID: -8774816188169298116}
   m_Layer: 6
   m_Name: Building Plan
-  m_TagString: Untagged
+  m_TagString: Build
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -966,6 +967,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-8774816188169298116
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1497115910270662}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 724e891b11b189d4fba6534a2bb67339, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1500687154708962
 GameObject:
   m_ObjectHideFlags: 0

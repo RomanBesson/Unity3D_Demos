@@ -8,8 +8,55 @@ using UnityStandardAssets.Characters.FirstPerson;
 /// </summary>
 public class InputManager : MonoBehaviour {
 
-    private bool inventoryState = false;                       //背包UI显示状态
-    private FirstPersonController m_FirstPersonController;     //玩家控制脚本
+    public static InputManager Instance;
+
+    /// <summary>
+    /// 背包UI显示状态
+    /// </summary>
+    private bool inventoryState = false;
+
+    /// <summary>
+    /// 玩家控制脚本
+    /// </summary>
+    private FirstPersonController m_FirstPersonController;
+    /// <summary>
+    /// 建造模块的UI面板
+    /// </summary>
+    private GameObject m_BuildPanel;
+
+    private bool buildState = false;                              // 建造模块启用禁用标志位 [true: 启用 | false：禁用]
+
+    /// <summary>
+    /// 建造模块启用禁用标志位 [true: 启用 | false：禁用]
+    /// </summary>
+    public bool BuildState
+    {
+        get { return buildState; }
+        set
+        {
+            if(m_BuildPanel!=null) m_BuildPanel.SetActive(value);
+            buildState = value;
+
+            //重新启用时重置
+            if (buildState == true)
+            {
+                m_BuildPanel.GetComponent<BuildPanelController>().Reset();
+            }
+
+            //隐藏时销毁已经选中的模型
+            else
+            {
+                //if (m_BuildPanel != null)
+                if (m_BuildPanel == null) return;
+                m_BuildPanel.GetComponent<BuildPanelController>().DestroyBuildModel();
+            }
+        }
+    }
+
+    void Awake()
+    {
+        Instance = this;
+    }
 
     void Start()
     {
@@ -21,8 +68,10 @@ public class InputManager : MonoBehaviour {
     {
         //检测背包隐藏和显示按键是否点击
         InventoryPanelKey();
+
         //检测是否按下了切换工具栏的按键
         ToolBarPanelKey();
+
     }
 
     /// <summary>
@@ -31,24 +80,31 @@ public class InputManager : MonoBehaviour {
     private void FindInit()
     {
        m_FirstPersonController = GameObject.Find("FPSController").GetComponent<FirstPersonController>();
+        m_BuildPanel = GameObject.Find("Canvas/BuildPanel");
+        m_BuildPanel.SetActive(false);
     }
+
 
     /// <summary>
     /// 检测背包隐藏和显示按键是否点击
     /// </summary>
     private void InventoryPanelKey()
     {
-        if (Input.GetKeyDown(GameConst.InventoryPanelKey))
+        //按下按键，且建筑UI没显示时
+        if (Input.GetKeyDown(GameConst.InventoryPanelKey) && !buildState)
         {
             //如果当前背包UI是显示的,要转变为关闭
             if (inventoryState)
             {
                 //设置背包状态标志位为关闭
                 inventoryState = false;
+
                 //隐藏背包
                 InventoryPanelController.Instance.UIPanelHide();
+
                 //开启角色控制
                 m_FirstPersonController.enabled = true;
+
                 //开启角色控制
                 if (ToolBarPanelController.Instance.CurrentActiveModel != null) 
                     ToolBarPanelController.Instance.CurrentActiveModel.SetActive(true);
