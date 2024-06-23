@@ -30,6 +30,11 @@ public class InventoryPanelController : MonoBehaviour,IUIPanelShowHide
         CreateAllItem();
     }
 
+    void OnDisable()
+    {
+        inventoryPanelModel.ObjectToJson(slotList, "InventoryJsonData.txt");
+    }
+
     /// <summary>
     /// 创建所有背包格子
     /// </summary>
@@ -48,13 +53,42 @@ public class InventoryPanelController : MonoBehaviour,IUIPanelShowHide
     /// </summary>
     private void CreateAllItem()
     {
-        //获取物品数据
-        List<InventoryItem> inventoryItems = inventoryPanelModel.GetJsonList("InventoryJsonData");
+        //向数据层获取物品数据
+        List<InventoryItem> inventoryItems = inventoryPanelModel.GetJsonList("InventoryJsonData.txt");
+
         //初始化有物品的格子
         for (int i = 0; i < inventoryItems.Count; i++)
         {
-            GameObject temp = GameObject.Instantiate(inventoryPanelView.Prefab_Item, slotList[i].transform);
-            temp.GetComponent<InventoryItemController>().InitItem(inventoryItems[i].ItemName, inventoryItems[i].ItemNum, inventoryItems[i].ItemId, inventoryItems[i].ItemBar);
+            if (inventoryItems[i].ItemName != "")
+            {
+                GameObject temp = GameObject.Instantiate(inventoryPanelView.Prefab_Item, slotList[i].transform);
+                temp.GetComponent<InventoryItemController>().InitItem(inventoryItems[i].ItemName, inventoryItems[i].ItemNum, inventoryItems[i].ItemId, inventoryItems[i].ItemBar, inventoryItems[i].BarValue);
+
+            }
+        }
+    }
+
+    /// <summary>
+    /// 向背包添加对应名称的物品
+    /// </summary>
+    /// <param name="name">物品名称.</param>
+    public void ForAllSlot(string name)
+    {
+        for (int i = 0; i < slotList.Count; i++)
+        {
+            Transform tempTransform = slotList[i].GetComponent<Transform>();
+            if (tempTransform.childCount != 0) //说明当前物品曹内有物品.
+            {
+                InventoryItemController temp = tempTransform.Find("InventoryItem").GetComponent<InventoryItemController>();
+                if (temp.GetImageName() == name) //说明是相同的物品.
+                {
+                    if (temp.Num != 64) //没有达到数量上限.
+                    {
+                        temp.Num++;     //数量增加
+                        break;
+                    }
+                }
+            }
         }
     }
 
@@ -96,7 +130,8 @@ public class InventoryPanelController : MonoBehaviour,IUIPanelShowHide
     /// </summary>
     public void UIPanelShow()
     {
-        gameObject.SetActive(true);
+        //移动回屏幕中间
+        GetComponent<RectTransform>().offsetMin = new Vector2(0, 0);
     }
 
     /// <summary>
@@ -104,7 +139,8 @@ public class InventoryPanelController : MonoBehaviour,IUIPanelShowHide
     /// </summary>
     public void UIPanelHide()
     {
-        gameObject.SetActive(false);
+        //移出屏幕外
+        GetComponent<RectTransform>().offsetMin = new Vector2(9999, 0);
     }
     #endregion
 

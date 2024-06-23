@@ -17,9 +17,8 @@ public class Platform : MaterialModelBase {
     /// </summary>
     private Transform targetPlatform;   
 
-    protected override void Start()
+    protected void Start()
     {
-        base.Start();
         IsCunPut = true;
     }
 
@@ -31,6 +30,7 @@ public class Platform : MaterialModelBase {
             IsCunPut = false;
         }
     }
+
 
     private void OnCollisionStay(Collision coll)
     {

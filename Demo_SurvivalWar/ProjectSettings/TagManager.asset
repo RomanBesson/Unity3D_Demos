@@ -12,6 +12,8 @@ TagManager:
   - PlatformToWall
   - PlatformToPillar
   - Build
+  - Hand
+  - Stone
   layers:
   - Default
   - TransparentFX

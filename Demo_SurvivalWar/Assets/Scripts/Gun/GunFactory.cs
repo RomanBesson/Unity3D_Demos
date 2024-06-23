@@ -9,11 +9,30 @@ public class GunFactory : MonoBehaviour {
 
     public static GunFactory Instance;
 
-    private GameObject prefab_AssaultRifle;     //步枪
-    private GameObject prefab_Shotgun;          //霰弹枪
-    private GameObject prefab_WoodenBow;        //弓箭
-    private GameObject prefab_WoodenSpear;      //长矛
-    private GameObject prefab_Build;            //建造图纸
+    /// <summary>
+    /// 步枪预制体
+    /// </summary>
+    private GameObject prefab_AssaultRifle;     
+    /// <summary>
+    /// 霰弹枪预制体
+    /// </summary>
+    private GameObject prefab_Shotgun;          
+    /// <summary>
+    /// 弓箭预制体
+    /// </summary>
+    private GameObject prefab_WoodenBow;        
+    /// <summary>
+    ///  长矛预制体
+    /// </summary>
+    private GameObject prefab_WoodenSpear;     
+    /// <summary>
+    /// 建造图纸预制体
+    /// </summary>
+    private GameObject prefab_Build;            
+    /// <summary>
+    /// 斧头预制体
+    /// </summary>
+    private GameObject prefab_StoneHatchet;     
     private int index = 0;                      //序号
 
     void Awake()
@@ -35,6 +54,7 @@ public class GunFactory : MonoBehaviour {
         prefab_WoodenBow = Resources.Load<GameObject>("Gun/Prefabs/Wooden Bow");
         prefab_WoodenSpear = Resources.Load<GameObject>("Gun/Prefabs/Wooden Spear");
         prefab_Build = Resources.Load<GameObject>("Gun/Prefabs/Building Plan");
+        prefab_StoneHatchet = Resources.Load<GameObject>("Gun/Prefabs/Stone Hatchet");
     }
 
     /// <summary>
@@ -66,6 +86,16 @@ public class GunFactory : MonoBehaviour {
                 break;
             case "Building":
                 tempGun = GameObject.Instantiate<GameObject>(prefab_Build, transform);
+                break;
+            case "Stone Hatchet":
+                tempGun = GameObject.Instantiate<GameObject>(prefab_StoneHatchet, transform);
+                //初始化
+                StoneHatchet sh = tempGun.GetComponent<StoneHatchet>();
+                sh.Id = index++;
+                sh.Damage = 400;
+                sh.Durable = 100;
+                sh.GunWeaponType = GunType.StoneHatchet;
+                sh.ToolBarIcon = icon;
                 break;
         }
         return tempGun;

@@ -27,6 +27,12 @@ public class InventoryItemController : MonoBehaviour, IBeginDragHandler, IDragHa
         get { return id; }
         set { id = value; }
     }
+
+    /// <summary>
+    /// 物品槽内图片
+    /// </summary>
+    public Image M_Image { get { return m_Image; } }
+
     public bool IsDrag { get { return isDrag; } }
     public int Num
     { 
@@ -66,7 +72,7 @@ public class InventoryItemController : MonoBehaviour, IBeginDragHandler, IDragHa
     }
 
     /// <summary>
-    /// 组件初始化
+    /// 组件资源初始化
     /// </summary>
     private void Init()
     {
@@ -85,15 +91,20 @@ public class InventoryItemController : MonoBehaviour, IBeginDragHandler, IDragHa
     /// </summary>
     /// <param name="name">物品图片名称</param>
     /// <param name="num">物品个数</param>
-    public void InitItem(string name, int num, int index, int bar)
+    public void InitItem(string name, int num, int index, int bar, string barValue)
     {
         m_Image.sprite = Resources.Load<Sprite>("Item/" + name);
         m_Text.text = num.ToString();
         this.num = num;
         id = index;
         this.bar = bar;
+
+        //设置耐久
+        if (bar == 1) 
+        m_Bar.fillAmount = float.Parse(barValue);
         BarOrNum();
     }
+
 
     /// <summary>
     /// 更新血条值.
@@ -107,6 +118,44 @@ public class InventoryItemController : MonoBehaviour, IBeginDragHandler, IDragHa
             GameObject.Destroy(gameObject);
         }
         m_Bar.fillAmount = value;
+    }
+
+    /// <summary>
+    /// 物品剩余耐久值
+    /// </summary>
+    /// <returns></returns>
+    public string GetBarValue()
+    {
+        return m_Bar.fillAmount.ToString();
+    }
+
+    /// <summary>
+    /// 获取此物品槽的图片名称
+    /// </summary>
+    /// <returns></returns>
+    public string GetImageName()
+    {
+        if (m_Image.sprite != null)
+        {
+            return m_Image.sprite.name.ToString();
+        }
+        return "";
+    }
+
+    /// <summary>
+    /// 获取物品血条显示状态
+    /// </summary>
+    /// <returns></returns>
+    public int GetBar()
+    {
+        if (m_Bar.gameObject.activeSelf)
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
     }
 
     #region 拖拽相关

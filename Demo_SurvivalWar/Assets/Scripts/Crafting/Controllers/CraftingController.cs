@@ -83,7 +83,7 @@ public class CraftingController : MonoBehaviour {
         item.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 110);
         item.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 110);
         //设置信息
-        item.GetComponent<InventoryItemController>().InitItem(tempSpriteName, 1, tempId, 1);
+        item.GetComponent<InventoryItemController>().InitItem(tempSpriteName, 1, tempId, 1, "1");
         InitButton();
         //调用父类方法对消耗的材料进行处理
         SendMessageUpwards("CraftingOK");

@@ -21,7 +21,11 @@ public enum GunType
     /// <summary>
     /// 长矛
     /// </summary>
-    WoodenSpear
+    WoodenSpear,
+    /// <summary>
+    /// 斧子
+    /// </summary>
+    StoneHatchet
 }
 
 /// <summary>

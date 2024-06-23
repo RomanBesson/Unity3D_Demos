@@ -13,10 +13,10 @@ public class PlayerTrigger : MonoBehaviour {
         if (coll.gameObject.name == "FPSController")
         {
             //如果门存在
-            if(gameObject.GetComponent<Transform>().parent.Find("Door(Clone)") != null)
+            if(gameObject.GetComponent<Transform>().parent.Find("Door") != null)
             {
                 //开门
-                gameObject.GetComponent<Transform>().parent.Find("Door(Clone)").GetComponent<DoorCtr>().OpenDoor();
+                gameObject.GetComponent<Transform>().parent.Find("Door").GetComponent<DoorCtr>().OpenDoor();
             }
         }
     }
@@ -27,10 +27,10 @@ public class PlayerTrigger : MonoBehaviour {
         if (coll.gameObject.name == "FPSController")
         {
             //门存在
-            if (gameObject.GetComponent<Transform>().parent.Find("Door(Clone)") != null)
+            if (gameObject.GetComponent<Transform>().parent.Find("Door") != null)
             {
                 //关门
-                gameObject.GetComponent<Transform>().parent.Find("Door(Clone)").GetComponent<DoorCtr>().CloseDoor();
+                gameObject.GetComponent<Transform>().parent.Find("Door").GetComponent<DoorCtr>().CloseDoor();
             }
         }
     }

@@ -201,6 +201,9 @@ public class BuildPanelController : MonoBehaviour {
             //如果已经存在可遥控的建造模型且可以摆放在当前位置
             if (BuildModel != null && BuildModel.GetComponent<MaterialModelBase>().IsCunPut)
             {
+                //设置名字
+                BuildModel.name = tempBuildModel.name;
+
                 //将摆放完的建筑材料放在 BuildModelEnd (14)层上，让射线可以检测到
                 BuildModel.layer = 14;
 

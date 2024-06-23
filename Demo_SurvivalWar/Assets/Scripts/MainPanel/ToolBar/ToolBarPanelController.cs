@@ -104,13 +104,20 @@ public class ToolBarPanelController : MonoBehaviour {
         if (currentActiveModel != null)
         {
             //如果不是建筑图纸
-            if (currentActiveModel.tag != "Build")
+            if (currentActiveModel.tag != "Build" && currentActiveModel.tag != "Hand")
             {
                 //执行放下武器动作
                 currentActiveModel.GetComponent<GunControllerBase>().Holster();
                 yield return new WaitForSeconds(1);
             }
-           
+
+            //如果是手持武器
+            if (currentActiveModel.tag == "Hand")
+            {
+                currentActiveModel.GetComponent<StoneHatchet>().Holster();
+                yield return new WaitForSeconds(1);
+            }
+
             currentActiveModel.SetActive(false);
         }
         //当前工具栏下有物品

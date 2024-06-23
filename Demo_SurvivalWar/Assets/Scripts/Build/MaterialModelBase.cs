@@ -37,7 +37,7 @@ public abstract class MaterialModelBase : MonoBehaviour {
     }
 
 
-    protected virtual void Start()
+    protected void Awake()
     {
         newMaterial = Resources.Load<Material>("Build/Building Preview");
         oldMaterial = gameObject.GetComponent<MeshRenderer>().material;

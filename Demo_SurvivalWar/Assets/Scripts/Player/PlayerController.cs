@@ -60,6 +60,18 @@ public class PlayerController : MonoBehaviour {
         CutVIT();
 	}
 
+    void OnCollisionEnter(Collision coll)
+    {
+        //拾取石头材料
+        if (coll.collider.tag == "RockMaterial")
+        {
+            //背包内对应物品数量加一
+            InventoryPanelController.Instance.ForAllSlot(coll.gameObject.GetComponent<RockMaterial>().Name);
+
+            GameObject.Destroy(coll.gameObject);
+        }
+    }
+
     /// <summary>
     /// 生命值削减.
     /// </summary>

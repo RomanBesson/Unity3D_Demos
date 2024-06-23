@@ -24,6 +24,15 @@ public class BulletMark : MonoBehaviour {
 
     [SerializeField] private int hp;                     //临时测试.生命值.  
 
+    /// <summary>
+    ///  石头爆出的材料.
+    /// </summary>
+    private GameObject prefab_Rock_Material;
+    /// <summary>
+    ///  石头材料的出生点偏移位置.
+    /// </summary>
+    private List<Vector3> rockPosList;                 
+
     public int Hp 
     { 
         get { return hp; }
@@ -32,7 +41,7 @@ public class BulletMark : MonoBehaviour {
             hp = value;
             if (hp <= 0)
             {
-                Destroy(gameObject);
+                DestorySelf();
             }
         }
     }
@@ -82,6 +91,15 @@ public class BulletMark : MonoBehaviour {
         {
             //弹痕&弹痕特效以及对应的管理父物体的加载
             ResourcesLoad("Bullet Decal_Stone", "Bullet Impact FX_Stone", "Effect_Stone_Parent");
+
+            //初始化掉落物以及位置
+            prefab_Rock_Material = Resources.Load<GameObject>("Env/Rock_Material");
+            rockPosList = new List<Vector3>();
+            rockPosList.Add(new Vector3(0, 0, 0));
+            rockPosList.Add(new Vector3(-1.5f, 0, -1.6f));
+            rockPosList.Add(new Vector3(0.9f, 0, -1.6f));
+            rockPosList.Add(new Vector3(1.7f, 0, 0.4f));
+            rockPosList.Add(new Vector3(-1.2f, 0, 1.3f));
         }
         else if(materialType == MaterialType.Metal)
         {
@@ -178,6 +196,23 @@ public class BulletMark : MonoBehaviour {
     }
 
     /// <summary>
+    /// 销毁自身
+    /// </summary>
+    private void DestorySelf()
+    {
+        GameObject.Destroy(gameObject);
+        //爆出材料.
+        if (materialType == MaterialType.Stone)
+        {
+            int max = Random.Range(3, 5);
+            for (int i = 0; i < max; i++)
+            {
+                GameObject.Instantiate<GameObject>(prefab_Rock_Material, transform.position + new Vector3(0, 2, 0) + rockPosList[i], Quaternion.identity);
+            }
+        }
+    }
+
+    /// <summary>
     /// 播放特效.
     /// </summary>
     private void PlayEffect(RaycastHit hit)
@@ -232,5 +267,17 @@ public class BulletMark : MonoBehaviour {
     {
         yield return new WaitForSeconds(time);
         pool.AddObject(go);
+    }
+
+    /// <summary>
+    /// 受击播放音效，减少hp
+    /// </summary>
+    /// <param name="hit"></param>
+    /// <param name="hpValue"></param>
+    public void HatchetHit(RaycastHit hit, int hpValue)
+    {
+        PlayAudios(hit);
+        PlayEffect(hit);
+        Hp -= hpValue;
     }
 }
