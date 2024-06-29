@@ -54,7 +54,7 @@ public class InventoryPanelController : MonoBehaviour,IUIPanelShowHide
     private void CreateAllItem()
     {
         //向数据层获取物品数据
-        List<InventoryItem> inventoryItems = inventoryPanelModel.GetJsonList("InventoryJsonData.txt");
+        List<InventoryItem> inventoryItems = inventoryPanelModel.GetJsonList("InventoryJsonData");
 
         //初始化有物品的格子
         for (int i = 0; i < inventoryItems.Count; i++)

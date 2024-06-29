@@ -83,7 +83,7 @@ public class PlayerController : MonoBehaviour {
         m_PlayerInfoPanel.SetHP(this.HP);
 
         //血屏效果显现
-        // m_BloodScreenPanel.SetImageAlpha(true);
+         m_BloodScreenPanel.SetImageAlpha(true);
 
         //播放受伤音效
         AudioManager.Instance.PlayAudioClipByName(ClipName.PlayerHurt, transform.position);

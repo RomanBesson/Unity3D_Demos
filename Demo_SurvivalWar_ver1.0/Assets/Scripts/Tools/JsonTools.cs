@@ -14,6 +14,7 @@ public sealed class JsonTools {
     public static List<T> LoadJsonFile<T>(string fileName)
     {
         List<T> tempList = new List<T>();
+        
         string tempJsonStr = Resources.Load<TextAsset>("JsonData/" + fileName).text;
 
         //解析JSON.
@@ -33,7 +34,13 @@ public sealed class JsonTools {
     public static List<T> LoadJsonFileByIO<T>(string fileName)
     {
         List<T> tempList = new List<T>();
-        string tempJsonStr = File.ReadAllText(Application.dataPath + @"\Resources\JsonData\" + fileName);
+
+        //string path = Application.isEditor ? Path.Combine(Application.dataPath, "Resources", "JsonData", fileName + ".txt") : Path.Combine(Application.streamingAssetsPath, fileName + ".txt");
+
+        string path = Path.Combine(Application.streamingAssetsPath, fileName + ".txt");
+
+        string tempJsonStr = File.ReadAllText(path);
+
 
         //解析JSON.
         JsonData jsonData = JsonMapper.ToObject(tempJsonStr);

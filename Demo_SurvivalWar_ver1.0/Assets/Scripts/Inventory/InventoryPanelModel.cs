@@ -16,6 +16,7 @@ public class InventoryPanelModel : MonoBehaviour
     public List<InventoryItem> GetJsonList(string fileName)
     {
         return JsonTools.LoadJsonFileByIO<InventoryItem>(fileName);
+       //return JsonTools.LoadJsonFile<InventoryItem>(fileName);
     }
 
     /// <summary>
@@ -46,10 +47,10 @@ public class InventoryPanelModel : MonoBehaviour
 
         //写入
         string str = JsonMapper.ToJson(tempList);
-        //Debug.Log("Monkey:" + str);
 
-        File.Delete(Application.dataPath + @"\Resources\JsonData\" + fileName);
-        StreamWriter sw = new StreamWriter(Application.dataPath + @"\Resources\JsonData\" + fileName);
+        File.Delete(Path.Combine(Application.streamingAssetsPath, fileName));
+        StreamWriter sw = new StreamWriter(Path.Combine(Application.streamingAssetsPath, fileName));
+
         sw.Write(str);
         sw.Close();
     }

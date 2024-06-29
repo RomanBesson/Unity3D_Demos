@@ -35,8 +35,9 @@ public class BuildModelsJson : MonoBehaviour {
         ModelsList = new List<BuildItem>();
         JsonsList = new List<BuildItem>();
 
-        jsonPath = Application.dataPath + @"\Resources\JsonData\ModelsJson.txt";
-        
+        jsonPath = Path.Combine(Application.streamingAssetsPath, "ModelsJson.txt");
+
+
         JsonToObject();
     }
 
