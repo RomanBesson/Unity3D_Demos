@@ -116,6 +116,9 @@ public class InventoryItemController : MonoBehaviour, IBeginDragHandler, IDragHa
         {
             gameObject.GetComponent<Transform>().parent.GetComponent<ToolBarSlotController>().Normal();
             GameObject.Destroy(gameObject);
+
+            //销毁工具栏的字典数据
+            SendMessageUpwards("DeleteDicItem");
         }
         m_Bar.fillAmount = value;
     }

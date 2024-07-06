@@ -1,0 +1,49 @@
+[{
+	"ItemId": 10,
+	"ItemName": "Building",
+	"ItemNum": 1,
+	"ItemBar": 0,
+	"BarValue": "1"
+}, {
+	"ItemId": 27,
+	"ItemName": "Shotgun",
+	"ItemNum": 1,
+	"ItemBar": 1,
+	"BarValue": "0.398"
+}, {
+	"ItemId": 0,
+	"ItemName": "",
+	"ItemNum": 0,
+	"ItemBar": 0,
+	"BarValue": "0"
+}, {
+	"ItemId": 0,
+	"ItemName": "",
+	"ItemNum": 0,
+	"ItemBar": 0,
+	"BarValue": "0"
+}, {
+	"ItemId": 0,
+	"ItemName": "",
+	"ItemNum": 0,
+	"ItemBar": 0,
+	"BarValue": "0"
+}, {
+	"ItemId": 0,
+	"ItemName": "",
+	"ItemNum": 0,
+	"ItemBar": 0,
+	"BarValue": "0"
+}, {
+	"ItemId": 0,
+	"ItemName": "",
+	"ItemNum": 0,
+	"ItemBar": 0,
+	"BarValue": "0"
+}, {
+	"ItemId": 0,
+	"ItemName": "",
+	"ItemNum": 0,
+	"ItemBar": 0,
+	"BarValue": "0"
+}]

@@ -71,6 +71,6 @@ public class InventoryItem
 
     public override string ToString()
     {
-        return string.Format("物品的名称:{0}, 数量:{1}, Id:{2}", this.itemName, this.itemNum, this.itemId);
+        return string.Format("物品的名称:{0}, 数量:{1}, Id:{2}, 是否有耐久{3}, 耐久值剩余{4}", this.itemName, this.itemNum, this.itemId, this.itemBar, this.barValue);
     }
 }

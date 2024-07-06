@@ -13,12 +13,18 @@ public class ToolBarPanelController : MonoBehaviour {
     private ToolBarPanelView m_ToolBarPanelView;
     private ToolBarPanelModel m_ToolBarPanelModel;
 
-    private GameObject currentActive = null;                        //物品槽现在被激活的物品
+    /// <summary>
+    /// 工具栏现在被激活的物品栏子
+    /// </summary>
+    private GameObject currentActive = null;                        
     private int currentKeyCode = -1;                                //存储当前的按键.
     private List<GameObject> slotList;                              //工具栏的物品槽
     private GameObject currentActiveModel = null;                   //存储当前激活的角色模型.
 
-    private Dictionary<GameObject, GameObject> toolBarDic = null;   //工具栏对应的物品字典（解决重复生成问题，相同物品只要激活就行了）
+    /// <summary>
+    /// 工具栏对应的物品字典 <物品栏子，物品栏子对应武器物品>
+    /// </summary>
+    private Dictionary<GameObject, GameObject> toolBarDic = null;   
 
     public GameObject CurrentActiveModel { get { return currentActiveModel; } }
 
@@ -31,7 +37,13 @@ public class ToolBarPanelController : MonoBehaviour {
         Init();
         CreateAllSlot();
 	}
-	
+
+    void OnDisable()
+    {
+        //不激活的时候保存数据
+        m_ToolBarPanelModel.ObjectToJson(slotList, "ToolBarJsonData.txt");
+    }
+
     private void Init()
     {
         m_ToolBarPanelView = gameObject.GetComponent<ToolBarPanelView>();
@@ -45,11 +57,22 @@ public class ToolBarPanelController : MonoBehaviour {
     /// </summary>
     private void CreateAllSlot()
     {
+        //向数据层获取物品数据
+        List<InventoryItem> inventoryItems = m_ToolBarPanelModel.GetJsonList("ToolBarJsonData");
+
         for (int i = 0; i < 8; i++)
         {
             GameObject slot = GameObject.Instantiate<GameObject>(m_ToolBarPanelView.Prefab_ToolBarSlot, m_ToolBarPanelView.Grid_Transform);
             //初始化信息
             slot.GetComponent<ToolBarSlotController>().InitInfo(m_ToolBarPanelView.Prefab_ToolBarSlot.name + i, i + 1);
+
+            //导入工具栏格子内的物品
+            if (inventoryItems[i].ItemName != "")
+            {
+                GameObject temp = GameObject.Instantiate(m_ToolBarPanelView.Prefab_Item, slot.transform);
+                temp.GetComponent<InventoryItemController>().InitItem(inventoryItems[i].ItemName, inventoryItems[i].ItemNum, inventoryItems[i].ItemId, inventoryItems[i].ItemBar, inventoryItems[i].BarValue);
+            }
+
             slotList.Add(slot);
         }
     }
@@ -85,6 +108,30 @@ public class ToolBarPanelController : MonoBehaviour {
     }
 
     /// <summary>
+    /// 删除当前持有武器模型及其字段里的对应元素关系
+    /// </summary>
+    public void DeleteDicItem()
+    {
+        //清空武器模型
+        currentActiveModel = null;
+        GameObject temp = null;
+        toolBarDic.TryGetValue(currentActive,out temp);
+        GameObject.Destroy(temp);
+
+        //清空字典对应关系
+        toolBarDic.Remove(currentActive);
+    }
+    /// <summary>
+    /// 清除字典里的所有对应关系
+    /// </summary>
+    public void DeleteAllDicItem()
+    {
+        //清空武器模型
+        currentActiveModel = null;
+        toolBarDic.Clear();
+    }
+
+    /// <summary>
     /// 调用枪械工厂类生成对应物品
     /// </summary>
     private void FindInventoryItem()
@@ -100,7 +147,7 @@ public class ToolBarPanelController : MonoBehaviour {
     /// <returns></returns>
     private IEnumerator CallGunFactory(Transform m_temp)
     {
-        //如果当前工具栏有物品
+        //如果当前已经持有物品
         if (currentActiveModel != null)
         {
             //如果不是建筑图纸
@@ -130,7 +177,6 @@ public class ToolBarPanelController : MonoBehaviour {
             //字典里没有现在的物品
             if (temp == null)
             {
-
                 //生成物品，添加进去
                 temp = GunFactory.Instance.CreateGun(m_temp.GetComponent<Image>().sprite.name, m_temp.gameObject);
                 toolBarDic.Add(currentActive, temp);

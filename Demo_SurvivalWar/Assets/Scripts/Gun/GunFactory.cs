@@ -35,6 +35,11 @@ public class GunFactory : MonoBehaviour {
     private GameObject prefab_StoneHatchet;     
     private int index = 0;                      //序号
 
+    /// <summary>
+    /// 储存已经生成的所有武器物品
+    /// </summary>
+    private List<GameObject> factoryObjectList = null;
+
     void Awake()
     {
         Instance = this;
@@ -43,6 +48,7 @@ public class GunFactory : MonoBehaviour {
 	void Start () {
         PrefabLoad();
 	}
+
 
     /// <summary>
     /// 加载枪械资源
@@ -55,6 +61,7 @@ public class GunFactory : MonoBehaviour {
         prefab_WoodenSpear = Resources.Load<GameObject>("Gun/Prefabs/Wooden Spear");
         prefab_Build = Resources.Load<GameObject>("Gun/Prefabs/Building Plan");
         prefab_StoneHatchet = Resources.Load<GameObject>("Gun/Prefabs/Stone Hatchet");
+        factoryObjectList = new List<GameObject>();
     }
 
     /// <summary>
@@ -66,7 +73,7 @@ public class GunFactory : MonoBehaviour {
     public GameObject CreateGun(string gunName, GameObject icon)
     {
         GameObject tempGun = null;
-        switch(gunName)
+        switch (gunName)
         {
             case "Assault Rifle":
                 tempGun = GameObject.Instantiate<GameObject>(prefab_AssaultRifle, transform);
@@ -98,6 +105,9 @@ public class GunFactory : MonoBehaviour {
                 sh.ToolBarIcon = icon;
                 break;
         }
+
+        //把生成的武器物品放进列表
+        factoryObjectList.Add(tempGun);
         return tempGun;
     }
 
@@ -116,5 +126,17 @@ public class GunFactory : MonoBehaviour {
         gcb.Durable = durable;
         gcb.GunWeaponType = type;
         gcb.ToolBarIcon = icon;
+    }
+
+    /// <summary>
+    /// 清空已经生成的武器物品
+    /// </summary>
+    public void ClearFactoryObjectList()
+    {
+        for(int i = 0; i < factoryObjectList.Count; i++)
+        {
+            GameObject.Destroy(factoryObjectList[i]);
+        }
+        factoryObjectList.Clear();
     }
 }

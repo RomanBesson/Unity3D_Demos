@@ -114,17 +114,28 @@ public class InputManager : MonoBehaviour {
             {
                 //设置背包状态标志位为开启
                 inventoryState = true;
+
                 //打开背包
                 InventoryPanelController.Instance.UIPanelShow();
+
                 //关闭角色控制
                 m_FirstPersonController.enabled = false;
+
                 //关闭鼠标锁定
                 Cursor.lockState = CursorLockMode.None;
+
                 //显示鼠标指针
                 Cursor.visible = true;
+
                 //关闭角色控制
                 if (ToolBarPanelController.Instance.CurrentActiveModel != null)
                     ToolBarPanelController.Instance.CurrentActiveModel.SetActive(false);
+
+                GunFactory.Instance.ClearFactoryObjectList();
+
+                ToolBarPanelController.Instance.DeleteAllDicItem();
+
+
             }
         }
     }

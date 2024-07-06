@@ -32,6 +32,7 @@ public class InventoryPanelController : MonoBehaviour,IUIPanelShowHide
 
     void OnDisable()
     {
+        //不激活的时候保存数据
         inventoryPanelModel.ObjectToJson(slotList, "InventoryJsonData.txt");
     }
 
